@@ -25,10 +25,8 @@ export interface KillData {
 
 const API_URL: string = "https://gameinfo.albiononline.com/api/gameinfo";
 
-export function AlbionAPIEvents(guildId: string): Promise<KillData[]> {
-    return new Promise(async (resolve, reject) => {
-        const endpoint: string = "/events";
-        const response = await fetch(`${API_URL}${endpoint}?guildId=${guildId}`)
-        resolve(response.json());
-    })
+export async function getAlbionEventsData(guildId: string): Promise<KillData[]> {
+    const endpoint: string = "/events";
+    const response = await fetch(`${API_URL}${endpoint}?guildId=${guildId}`)
+    return await response.json();
 }

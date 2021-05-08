@@ -44,6 +44,8 @@ export class DiscordClientWrapper extends EventEmitter {
     }
 
     protected onMessage(message: Discord.Message): void {
+        this.emit(Discord.Constants.Events.MESSAGE_CREATE, message);
+
         if (message.author.bot ||
             message.content.startsWith(this.config.prefix) === false) return;
         
@@ -54,7 +56,10 @@ export class DiscordClientWrapper extends EventEmitter {
         if (!command) return;
 
         command(message, split.splice(1, split.length));
+    }
 
-        this.emit(Discord.Constants.Events.MESSAGE_CREATE, message);
+    public async send(channelId: string, message: string | { [ embed: string ]: Discord.MessageEmbed }): Promise<void> {
+        const channel: Discord.Channel = await this.client.channels.fetch(channelId);
+        if (channel.isText()) channel.send(message); 
     }
 }

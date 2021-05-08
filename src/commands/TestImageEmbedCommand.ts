@@ -1,7 +1,7 @@
 import { Discord, IDiscordClientCommand, DiscordCommandCallback } from "../DiscordClientWrapper";
 import { createImageFromTemplate } from "../PuppeteerImageCreator";
 import path from "path";
-import { AlbionAPIEvents, EquipmentData, KillData, PlayerData } from "../AlbionAPIWrapper";
+import { getAlbionEventsData, EquipmentData, KillData, PlayerData } from "../AlbionAPIWrapper";
 
 function createEmbed(): Discord.MessageEmbed {
     const attachment = new Discord.MessageAttachment("./build/temp.png", "temp.png")
@@ -18,8 +18,8 @@ function createEmbed(): Discord.MessageEmbed {
 export class TestImageEmbedCommand implements IDiscordClientCommand {
     public command: string = "test";
     public onCommand: DiscordCommandCallback = async (message: Discord.Message, params: string[]) => {
-        const data: KillData[] = await AlbionAPIEvents("pBFwis3sRISF7qkNIYgyjg");
-        
+        const data: KillData[] = await getAlbionEventsData("pBFwis3sRISF7qkNIYgyjg");
+
         await createImageFromTemplate(path.join(__dirname, "../../templates/killevent.html"), (data: KillData) => {
             const players: string[] = [ "Killer", "Victim" ];
             players.forEach((p: string) => {
