@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/vdkuipb/albion#readme",
   "devDependencies": {
+    "@types/node": "^15.0.2",
     "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^9.0.0"
   }
 }
