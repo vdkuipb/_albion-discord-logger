@@ -1,11 +1,13 @@
 import { config } from "dotenv";
 import { Discord, DiscordClientWrapper } from "./DiscordClientWrapper";
-import { PingPongCommand, TestImageEmbedCommand } from "./commands";
+import { PingPongCommand } from "./commands";
 import { EquipmentData, getAlbionEventsData, KillData, PlayerData } from "./AlbionAPIWrapper";
 import path from "path";
 import { createImageFromTemplate } from "./PuppeteerImageCreator";
 
 config();
+
+if (!process.env.TOKEN || !process.env.GUILDID || !process.env.CHANNELID) throw new Error("Please set dotenv file variables");
 
 async function createKillDataEmbed(kill: KillData): Promise<Discord.MessageEmbed> {
     await createImageFromTemplate(path.join(__dirname, "../templates/killevent.html"), (data: KillData) => {
@@ -60,22 +62,22 @@ const discord: DiscordClientWrapper = new DiscordClientWrapper({
 });
 
 discord.setCommands([ 
-    new PingPongCommand(),
-    // new TestImageEmbedCommand()
+    new PingPongCommand()
 ]);
 
 discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
     let previousEventId: number = -1;
+    // let previousEventId: number = 234690478;
 
     async function sendLatestsKillsEventEmbeds() {
-        const data = await getAlbionEventsData("pBFwis3sRISF7qkNIYgyjg");
-        if (previousEventId === -1) previousEventId = data[0].EventId;
+        const data = await getAlbionEventsData(process.env.GUILDID || "");
+        // if (previousEventId === -1) previousEventId = data[0].EventId;
         for (let i: number = data.length - 1, l = 0; i >= l; i--) {
             if (data[i].EventId <= previousEventId) {
                 continue;
             }
             const embed: Discord.MessageEmbed = await createKillDataEmbed(data[i]);
-            await discord.send("839496429482410044", { embed})
+            await discord.send(process.env.CHANNELID || "", { embed})
             //test:839832861406396426
         }
         previousEventId = data[0].EventId;
