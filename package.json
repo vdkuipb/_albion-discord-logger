@@ -1,0 +1,22 @@
+{
+  "name": "albion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "tsc && node ./build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vdkuipb/albion.git"
+  },
+  "author": "vdkuipb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vdkuipb/albion/issues"
+  },
+  "homepage": "https://github.com/vdkuipb/albion#readme",
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  }
+}
