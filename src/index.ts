@@ -1,3 +1,4 @@
+
 import { config } from "dotenv";
 import { Discord, DiscordClientWrapper } from "./DiscordClientWrapper";
 import { PingPongCommand } from "./commands";
@@ -5,13 +6,19 @@ import { EquipmentData, getAlbionEventsData, KillData, PlayerData } from "./Albi
 import path from "path";
 import { createImageFromTemplate } from "./PuppeteerImageCreator";
 
+const fileName: string = "kill.png";
+
 config();
 
 if (!process.env.TOKEN || !process.env.GUILDID || !process.env.CHANNELID) throw new Error("Please set dotenv file variables");
 
 async function createKillDataEmbed(kill: KillData): Promise<Discord.MessageEmbed> {
     await createImageFromTemplate(path.join(__dirname, "../templates/killevent.html"), (data: KillData) => {
-        console.log(data);
+        function querySelectorSetInnerHTML(query: string, innerHTML: string): void {
+            const element = document.querySelector(query);
+            if (element) element.innerHTML = innerHTML;
+        }
+
         const players: string[] = [ "Killer", "Victim" ];
         players.forEach((p: string) => {
             const player: PlayerData = (data[p as keyof KillData] as PlayerData);
@@ -28,31 +35,26 @@ async function createKillDataEmbed(kill: KillData): Promise<Discord.MessageEmbed
                 if (!player.Equipment[item as keyof EquipmentData]) return;
                 element.src = `https://render.albiononline.com/v1/item/${player.Equipment[item as keyof EquipmentData].Type}`;
             });
-        });
-        function querySelectorSetInnerHTML(query: string, innerHTML: string): void {
-            const element = document.querySelector(query);
-            if (element) element.innerHTML = innerHTML;
-        }
-        querySelectorSetInnerHTML(`#Killer [data-type=KillerGuild]`, data.Killer.GuildName);
-        querySelectorSetInnerHTML(`#Killer [data-type=KillerName]`, data.Killer.Name); 
-        querySelectorSetInnerHTML(`#Killer [data-type=KillerIP]`, Math.round(data.Killer.AverageItemPower).toString() + " IP");
 
-        querySelectorSetInnerHTML(`#Victim [data-type=VictimGuild]`, data.Victim.GuildName);
-        querySelectorSetInnerHTML(`#Victim [data-type=VictimName]`, data.Victim.Name);
-        querySelectorSetInnerHTML(`#Victim [data-type=VictimIP]`, Math.round(data.Victim.AverageItemPower).toString() + " IP");
+            const playerData: PlayerData = data[p as keyof KillData] as PlayerData;
+
+            querySelectorSetInnerHTML(`#${p} [data-type=${p}Guild]`, playerData.AllianceName === "" ? playerData.GuildName : `[${playerData.AllianceName}]${playerData.GuildName}`);
+            querySelectorSetInnerHTML(`#${p} [data-type=${p}Name]`, playerData.Name); 
+            querySelectorSetInnerHTML(`#${p} [data-type=${p}IP]`, Math.round(playerData.AverageItemPower).toString() + " IP");
+        });
 
         querySelectorSetInnerHTML(`#Stats [data-type=Timestamp]`, data.TimeStamp.toString());
         querySelectorSetInnerHTML(`#Stats [data-type=TotalVictimKillFame]`, data.TotalVictimKillFame.toString());
-    }, kill as any, path.join(__dirname, "../build/temp.png"));
+    }, kill as any, path.join(__dirname, "../build/" + fileName));
 
-    const attachment = new Discord.MessageAttachment("./build/temp.png", "temp.png")
+    const attachment = new Discord.MessageAttachment("./build/" + fileName, fileName)
     const embed: Discord.MessageEmbed = new Discord.MessageEmbed({
         title: kill.Killer.Name + " killed " + kill.Victim.Name,
         description: "",
         color: 0x000000
     });
     embed.attachFiles([ attachment ]);
-    embed.setImage("attachment://temp.png");
+    embed.setImage("attachment://" + fileName);
     return embed;
 }
 
@@ -71,7 +73,7 @@ discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
 
     async function sendLatestsKillsEventEmbeds() {
         const data = await getAlbionEventsData(process.env.GUILDID || "");
-        // if (previousEventId === -1) previousEventId = data[0].EventId;
+        if (previousEventId === -1) previousEventId = data[0].EventId;
         for (let i: number = data.length - 1, l = 0; i >= l; i--) {
             if (data[i].EventId <= previousEventId) {
                 continue;
@@ -85,6 +87,14 @@ discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
 
     sendLatestsKillsEventEmbeds();
     setInterval(sendLatestsKillsEventEmbeds, 60000*5);
+
+    async function testLatestKillEmbed() {
+        const data = await getAlbionEventsData(process.env.GUILDID || "");
+        const embed = await createKillDataEmbed(data[0]);
+        await discord.send("839832861406396426" || "", { embed})
+    }
+
+    // testLatestKillEmbed();
 });
 
 discord.login();
