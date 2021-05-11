@@ -1,9 +1,11 @@
 import puppeteer, { SerializableOrJSHandle } from "puppeteer";
+import fs from "fs";
 
 export async function createImageFromTemplate(templateFile: string, evaluateCallback: (...args: any[]) => void, data: SerializableOrJSHandle, outputFile: string): Promise<void> {
     const browser: puppeteer.Browser = await puppeteer.launch();
     const page: puppeteer.Page = await browser.newPage();
-    await page.goto(templateFile);
+    const html: string = await fs.promises.readFile(templateFile, "utf8");
+    await page.setContent(html);
     await page.evaluate(evaluateCallback, data);
     // const watch = page.waitForFunction('window.status === "ready"');
     // await watch; 

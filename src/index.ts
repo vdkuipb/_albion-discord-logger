@@ -72,7 +72,9 @@ discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
     // let previousEventId: number = 234690478;
 
     async function sendLatestsKillsEventEmbeds() {
+        console.log("previous timestamp", previousTimeStamp);
         const data = await getAlbionEventsData(process.env.GUILDID || "");
+        console.log("timestamps", data.map(d => d.TimeStamp + ", " + d.Victim.Name));
         if (previousTimeStamp === "") previousTimeStamp = data[0].TimeStamp;
         for (let i: number = data.length - 1, l = 0; i >= l; i--) {
             if (new Date(data[i].TimeStamp) <= new Date(previousTimeStamp)) {
@@ -83,6 +85,7 @@ discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
             //test:839832861406396426
         }
         previousTimeStamp = data[0].TimeStamp;
+        console.log("set timestamp to ", previousTimeStamp)
     }
 
     sendLatestsKillsEventEmbeds();
@@ -93,6 +96,8 @@ discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
         const embed = await createKillDataEmbed(data[0]);
         await discord.send("839832861406396426" || "", { embed})
     }
+
+    testLatestKillEmbed();
 
     // testLatestKillEmbed();
 });
