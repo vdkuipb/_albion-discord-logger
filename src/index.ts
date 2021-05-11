@@ -68,21 +68,21 @@ discord.setCommands([
 ]);
 
 discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
-    let previousEventId: number = -1;
+    let previousTimeStamp: string = "";
     // let previousEventId: number = 234690478;
 
     async function sendLatestsKillsEventEmbeds() {
         const data = await getAlbionEventsData(process.env.GUILDID || "");
-        if (previousEventId === -1) previousEventId = data[0].EventId;
+        if (previousTimeStamp === "") previousTimeStamp = data[0].TimeStamp;
         for (let i: number = data.length - 1, l = 0; i >= l; i--) {
-            if (data[i].EventId <= previousEventId) {
+            if (new Date(data[i].TimeStamp) <= new Date(previousTimeStamp)) {
                 continue;
             }
             const embed: Discord.MessageEmbed = await createKillDataEmbed(data[i]);
             await discord.send(process.env.CHANNELID || "", { embed})
             //test:839832861406396426
         }
-        previousEventId = data[0].EventId;
+        previousTimeStamp = data[0].TimeStamp;
     }
 
     sendLatestsKillsEventEmbeds();

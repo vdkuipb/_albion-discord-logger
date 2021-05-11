@@ -16,7 +16,7 @@ export interface PlayerData {
 export interface KillData {
     numberOfParticipants: number;
     EventId: number;
-    TimeStamp: Date;
+    TimeStamp: string;
     Killer: PlayerData;
     Victim: PlayerData;
     TotalVictimKillFame: number;
