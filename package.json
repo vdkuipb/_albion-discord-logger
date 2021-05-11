@@ -1,0 +1,30 @@
+{
+  "name": "albion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "tsc && node ./build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vdkuipb/albion.git"
+  },
+  "author": "vdkuipb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vdkuipb/albion/issues"
+  },
+  "homepage": "https://github.com/vdkuipb/albion#readme",
+  "devDependencies": {
+    "@types/node": "^15.0.2",
+    "@types/node-fetch": "^2.5.10",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^9.0.0",
+    "node-fetch": "^2.6.1",
+    "puppeteer": "^9.1.1"
+  }
+}
