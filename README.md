@@ -11,4 +11,4 @@
 ## Example
 <img src="./public/example.png">
 
-<!--START-THUMBhttps://raw.githubusercontent.com/vdkuipb/albion-discord-logger/master/public/pf.pngEND-THUMB-->
+<!--START-THUMBhttps://raw.githubusercontent.com/vdkuipb/albion-discord-logger/main/public/pf.pngEND-THUMB-->
