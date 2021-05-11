@@ -97,8 +97,6 @@ discord.on(Discord.Constants.Events.CLIENT_READY, async () => {
         await discord.send("839832861406396426" || "", { embed})
     }
 
-    testLatestKillEmbed();
-
     // testLatestKillEmbed();
 });
 
