@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import Discord from "discord.js";
 export * as Discord from "discord.js";
 
-export type DiscordCommandCallback = (message: Discord.Message, params: string[]) => void;
+export type DiscordCommandCallback = (client: DiscordClientWrapper, message: Discord.Message, params: string[]) => void;
 
 export interface IDiscordClientConfig {
     token: string;
@@ -16,7 +16,7 @@ export interface IDiscordClientCommand {
 
 export class DiscordClientWrapper extends EventEmitter {
     private config: IDiscordClientConfig;
-    private client: Discord.Client;
+    protected client: Discord.Client;
     private commands: { [command: string]: DiscordCommandCallback };
 
     public constructor(config: IDiscordClientConfig) {
@@ -55,7 +55,7 @@ export class DiscordClientWrapper extends EventEmitter {
         const command: DiscordCommandCallback = this.commands[split[0]];
         if (!command) return;
 
-        command(message, split.splice(1, split.length));
+        command(this, message, split.splice(1, split.length));
     }
 
     public async send(channelId: string, message: string | { [ embed: string ]: Discord.MessageEmbed }): Promise<void> {
